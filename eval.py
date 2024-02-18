@@ -174,7 +174,8 @@ if __name__ == '__main__':
     elif args.develop_post_process:
         cfg.POST_PROCESS.METHOD = "develop"
 
-    device = torch.device('cpu' if args.no_cuda else 'cuda')
+    # device = torch.device('cpu' if args.no_cuda else 'cuda')
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     result_dir = os.path.join("eval_result", str(int(time.time())))

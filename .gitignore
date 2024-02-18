@@ -8,3 +8,8 @@
 /eval_result*
 /result_*
 /scratch*
+/layoutnet_dataset/
+*.pt
+*.pth
+__pycache__
+/result_visu/
