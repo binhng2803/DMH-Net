@@ -105,11 +105,22 @@ class PerspectiveDataset(data.Dataset):
         # 读取原图、角点label数据
         img_path = os.path.join(self.img_dir, filename)
         e_img = np.array(Image.open(img_path), np.float32)[..., :3] / 255.
-
+        ######################################################################
+        # import cv2
+        # cv2.imwrite("./ex_img/test.png", cv2.cvtColor(np.round(e_img * 255).astype(np.uint8), cv2.COLOR_RGB2BGR))
+        ######################################################################
         if cor is None:
             with open(os.path.join(self.cor_dir, filename[:-4] + ".txt")) as f:
                 cor = np.array([line.strip().split() for line in f if line.strip()], np.float32)
 
+        ######################################################################
+        # import cv2
+        # img = cv2.imread(img_path)
+        # for point in cor:
+        #     print(point)
+        #     cv2.circle(img, tuple(map(int,  point)), 5, (0, 0, 255), 2)
+        # cv2.imwrite("./ex_img/img.jpg", img)
+        ######################################################################
         # fname = self.img_fnames[idx]
         # P = self.P
         # l = np.tan(np.deg2rad(self.FOV / 2))
@@ -229,6 +240,9 @@ class PerspectiveDataset(data.Dataset):
 
         # 到此e_img的数据增强结束，开始生成gt使用的数据
         pres = generatePerspective(e_img, cor, self.view_name, self.view_args, self.view_size)
+        ############################################
+        # print(pres[0].keys())
+        ############################################
         # 解析pres的内容 转换为label向量
         p_imgs = []
         xLabels, yLabels, cUpLabels, cDownLabels = [], [], [], []
@@ -585,9 +599,13 @@ if __name__ == '__main__':
     cfg.DATA.ROOT_DIR = "data/layoutnet_dataset"
     dataset = PerspectiveDataset(cfg, "train")
     d = dataset[0]
-    a = 1
+    # a = 1
+    # print(d)
+    # exit()
 
-
+    # example = dataset.__getitem__(4)
+    # print(example)    
+    
 def worker_init_fn(_):
     worker_info = torch.utils.data.get_worker_info()
     dataset = worker_info.dataset

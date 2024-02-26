@@ -192,7 +192,12 @@ class DMHNet(nn.Module):
             results_dict["p_preds_xy"][:, :, :, 0] = torch.ones_like(results_dict["p_preds_xy"][:, :, :, 0]) * -math.inf
 
         losses = self.calculate_loss(input, results_dict)
-
+        #########################################
+        print('##############################')
+        print('result_dict:', results_dict.keys())
+        print('losses:', losses)
+        print('##############################')
+        #########################################
         return losses, results_dict
 
     def calculate_loss(self, input, output):
@@ -253,5 +258,5 @@ class DMHNet(nn.Module):
             one_loss = one_loss_x + one_loss_y + one_loss_c_up + one_loss_c_down
             losses["p_" + VIEW_NAME[view_idx]] = one_loss
             losses["total"] += self.cfg.MODEL.get("LOSS", {}).get("ALPHA_PERSPECTIVE", 1.0) * one_loss
-
+        # print(losses)
         return losses

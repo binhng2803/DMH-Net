@@ -182,55 +182,70 @@ if __name__ == '__main__':
     os.makedirs(result_dir, exist_ok=True)
 
     # Create dataloader
-    print("num_workers: " + str(args.num_workers))
+    # print("num_workers: " + str(args.num_workers))
 
     dataset_valid = PerspectiveDataset(cfg, "test" if not args.valid_set else "valid",  # TODO 新代码现在是用测试集进行验证的
                                        filename=args.input_file)
-    loader_valid = DataLoader(dataset_valid,
-                              args.batch_size,
-                              collate_fn=dataset_valid.collate,
-                              shuffle=False,
-                              drop_last=False,
-                              num_workers=args.num_workers,
-                              pin_memory=not args.no_cuda,
-                              worker_init_fn=worker_init_fn)
+    ################################################################
+    example = dataset_valid.__getitem__(4)
+    # print(example.keys())
+    # print('e_img:', example['e_img'].shape)
+    # print('p_imgs:', example['p_imgs'].shape) 
+    # print('cor', example['cor'])
+    # print('height:', example['height'])
+    # print('xLabels:', example['xLabels'].shape)
+    # print('yLabels:', example['yLabels'].shape)
+    # print('cUpLabels:', example['cUpLabels'].shape)
+    # print('cDownLabels:', example['cDownLabels'].shape)
+    # print('peaks:', example['peaks'][0].shape)
+    # print('lines:', example['lines'])
+    
+    ################################################################
+    # loader_valid = DataLoader(dataset_valid,
+    #                           args.batch_size,
+    #                           collate_fn=dataset_valid.collate,
+    #                           shuffle=False,
+    #                           drop_last=False,
+    #                           num_workers=args.num_workers,
+    #                           pin_memory=not args.no_cuda,
+    #                           worker_init_fn=worker_init_fn)
 
-    # Create model
-    net = DMHNet(cfg, cfg.MODEL.get("BACKBONE", {}).get("NAME", "drn38"), not args.no_rnn).to(device)
+    # # Create model
+    # net = DMHNet(cfg, cfg.MODEL.get("BACKBONE", {}).get("NAME", "drn38"), not args.no_rnn).to(device)
 
-    if not args.no_multigpus:
-        net = nn.DataParallel(net)  # multi-GPU
+    # if not args.no_multigpus:
+    #     net = nn.DataParallel(net)  # multi-GPU
 
-    print(str(cfg.POST_PROCESS))
-    if output_file: output_file.write(str(cfg.POST_PROCESS) + "\n\n")
+    # print(str(cfg.POST_PROCESS))
+    # if output_file: output_file.write(str(cfg.POST_PROCESS) + "\n\n")
 
-    if args.ckpt == "None":
-        warnings.warn("ckpt参数显式传入了None！将不会加载任何参数！")
-    else:
-        state_dict = pipeload(args.ckpt, map_location='cpu')["state_dict"]
-        net.load_state_dict(state_dict, strict=True)
+    # if args.ckpt == "None":
+    #     warnings.warn("ckpt参数显式传入了None！将不会加载任何参数！")
+    # else:
+    #     state_dict = pipeload(args.ckpt, map_location='cpu')["state_dict"]
+    #     net.load_state_dict(state_dict, strict=True)
 
-    visualize_count = len(loader_valid) if args.visu_all else args.visu_count
-    show = args.visu_path is None
-    valid_loss, imgs, metrics = valid(cfg, net, loader_valid, dataset_valid, device, visualize_count, show=show,
-                                      dpi=200, print_detail=args.print_detail)
+    # visualize_count = len(loader_valid) if args.visu_all else args.visu_count
+    # show = args.visu_path is None
+    # valid_loss, imgs, metrics = valid(cfg, net, loader_valid, dataset_valid, device, visualize_count, show=show,
+    #                                   dpi=200, print_detail=args.print_detail)
 
-    for k, v in valid_loss.items():
-        k = 'eval_loss/%s' % k
-        print("{:s} {:f}".format(k, v))
-        if output_file: output_file.write("{:s} {:f}".format(k, v) + "\n")
+    # for k, v in valid_loss.items():
+    #     k = 'eval_loss/%s' % k
+    #     print("{:s} {:f}".format(k, v))
+    #     if output_file: output_file.write("{:s} {:f}".format(k, v) + "\n")
 
-    for k, v in metrics.items():
-        k = 'metric/%s' % k
-        print("{:s} {:f}".format(k, v))
-        if output_file: output_file.write("{:s} {:f}".format(k, v) + "\n")
+    # for k, v in metrics.items():
+    #     k = 'metric/%s' % k
+    #     print("{:s} {:f}".format(k, v))
+    #     if output_file: output_file.write("{:s} {:f}".format(k, v) + "\n")
 
-    if output_file:
-        output_file.write("\n\n")
-        output_file.write(str(cfg) + "\n")
+    # if output_file:
+    #     output_file.write("\n\n")
+    #     output_file.write(str(cfg) + "\n")
 
-    for k, v in imgs.items():
-        if args.visu_path:
-            os.makedirs(args.visu_path, exist_ok=True)
-            success = cv2.imwrite(os.path.join(args.visu_path, k + ".jpg"), cv2.cvtColor(v, cv2.COLOR_RGB2BGR))
-            assert success, "write output image fail!"
+    # for k, v in imgs.items():
+    #     if args.visu_path:
+    #         os.makedirs(args.visu_path, exist_ok=True)
+    #         success = cv2.imwrite(os.path.join(args.visu_path, k + ".jpg"), cv2.cvtColor(v, cv2.COLOR_RGB2BGR))
+    #         assert success, "write output image fail!"

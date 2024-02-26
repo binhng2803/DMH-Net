@@ -218,13 +218,41 @@ if __name__ == '__main__':
     if args.num_workers is None:
         args.num_workers = min(max(8, cfg.OPTIM.BATCH_SIZE), os.cpu_count()) if not sys.gettrace() else 0
 
-    device = torch.device('cpu' if args.no_cuda else 'cuda')
+    # device = torch.device('cpu' if args.no_cuda else 'cuda')
+    #############################################
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #############################################
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     os.makedirs(os.path.join(args.ckpt, args.id), exist_ok=True)
 
     # Create dataloader
     dataset_train = PerspectiveDataset(cfg, "train", train_mode=True)
+    ################################################################
+    # example = dataset_train.__getitem__(4)
+    # # print(example.keys())
+    # # print('e_img:', example['e_img'].shape)
+    # # print('p_imgs:', example['p_imgs'].shape) 
+    # e_img = (example['e_img'].numpy()*255).astype(np.uint8)
+    # e_img = np.transpose(e_img, (1, 2, 0))
+    # import cv2
+    # cv2.imwrite('./ex_img/e_img.jpg', cv2.cvtColor(e_img, cv2.COLOR_RGB2BGR))
+    # count = 1
+    # for p_img in example['p_imgs']:
+    #     p_img = (p_img.numpy()*255).astype(np.uint8)
+    #     p_img = np.transpose(p_img, (1, 2, 0))
+    #     cv2.imwrite(f'./ex_img/p_img_{count}.jpg', cv2.cvtColor(p_img, cv2.COLOR_RGB2BGR))
+    #     count += 1
+    # # print('cor', example['cor'])
+    # print('height:', example['height'])
+    # print('xLabels:', example['xLabels'].shape)
+    # print('yLabels:', example['yLabels'].shape)
+    # print('cUpLabels:', example['cUpLabels'].shape)
+    # print('cDownLabels:', example['cDownLabels'].shape)
+    # print('peaks:', len(example['peaks'][0]))
+    # print('lines:', example['lines'])
+    
+    ################################################################
     dataset_train_size = len(dataset_train)
     print("num_workers: " + str(args.num_workers))
     print("batch_size: " + str(cfg.OPTIM.BATCH_SIZE))

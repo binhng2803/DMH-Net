@@ -13,3 +13,6 @@
 *.pth
 __pycache__
 /result_visu/
+/ex_img/
+draft.py
+/pano_stretch_img/

@@ -92,7 +92,7 @@ def linesPostProcess(lines, img_hw, is_updown_view, return_mask=False):
     result = []
     mask = []
     for line in lines:
-        k = (line[6] - line[4]) / (line[5] - line[3])
+        k = (line[6] - line[4]) / ((line[5] - line[3])+1e-8)
         p1Res = processPoint(line[3:5], k)
         p2Res = processPoint(line[5:7], k)
         if p1Res is not None and p2Res is not None:
